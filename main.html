@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+    <meta name="description" content="HELP commuters to keep track of their desired bus locaiton">
+    <meta name="keywords" content="NJIT, commuters, bus, NJtransit">
+    <meta name="author" content="Yangfan Cheng">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+          #map { height: 80%; margin-left: auto; margin-right: auto; width:90%; border: 2px solid green; }
+    </style>
+    <script type='text/javascript'>
+        var hello="hello"; //global variable
+        latv = 40.7420;
+        lonv = -74.178078;
+    </script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="navbar.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src= "script.js"></script>
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeDUteV5qFG7pZauaovM89PAUqEvaq5qg&callback=initMap">
+    </script>
+    <script>
+        $(document).ready(function(){
+            $('#target').submit(function(e){
+              var arr;
+              e.preventDefault();
+              $.ajax({
+                type: 'GET',
+                url: "run.php",
+                data:{bus:$('input[name="bus"]').val()},
+                async:true,
+                success: function(result){
+                  var json = JSON.parse(result);
+                  var content = "";
+                  for (var i = 0; i < json.buses.length; i++)
+                  {
+                    content += "BUS ID: " + json.buses[i].id + ", ";
+                    content += "Distance: " + json.buses[i].distance + " miles away, ";
+                    content += "destination: " + json.buses[i].des + ", ";
+                    content += "Route: " + json.buses[i].route + "<br>";
+                  }
+                  $('#aList').html(content);
+                  placeMarker(new google.maps.LatLng(json.target.lat, json.target.lon));
+                  $('#target_bus').text(json.target.busid);
+                }
+              });
+            });
+        });
+    </script>
+		<title>strange</title>
+	</head>
+	
+	<body>
+    <!--boostrap nav bar-->
+    <nav class=" navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- header -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar navbar-brand" href="#">BusTracker</a>
+            </div>
+            <!-- menu items -->
+            <div class="collapse navbar-collapse" id="navbar1">
+                <ul class="nav navbar-nav">
+
+                    <li class="active"><a href="#">Donate</a></li>
+                    <li><a href="#">NJIT</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Support</a></li>
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">One more separated link</a></li>
+                      </ul>
+                    </li>
+                </ul>
+                <!-- social media icons -->
+                <ul class="nav navbar-nav navbar-right social">
+                    <li><a href="#"><i class="fa fa-lg fa-facebook"></i></a></li>
+                    <li><a href="#"><i class="fa fa-lg fa-github"></i></a></li>
+                    <li><a href="#"><i class="fa fa-lg fa-google-plus"></i></a></li>
+                    <li><a href="#"><i class="fa fa-lg fa-linkedin"></i></a></li>
+                    <li><a href="#"><i class="fa fa-2x fa-search"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!--
+    <nav class="navbar navbar-default" role="navigation">
+      <div class="navbar-header">
+          <a class ="navbar-brand">bustracker</a>
+      </div>
+        <div>
+          <ul class="collapse nav navbar-nav">
+              <li><a href="#" class="fa fa-twitter fa-lg"></a></li>
+              <li><a href='#' class="fa fa-linkedin fa-lg"></a></li>
+              <li><a href="#" class="fa fa-facebook fa-lg"></a></li>
+              <li><a href="#" class="fa fa-github fa-lg"></a></li>
+          </ul>
+        </div>
+    </nav>
+    -->
+    <h2>Hello, Welcome to <strong>Yangfan's Playground</strong></h2>
+    <p>Please submit your bus number in the below search box <span class="orange"> ATTN </span> <span class="green"> HIGHLANDERS!</span>KAPPA</p>
+    <div align="center">
+      <form  id="target" method= "get">
+          <input type="text" placeholder="please enter number of bus" name="bus" class="mytext" size="23">     
+          <input type="submit" class="btn fa-input" value="&#xf043; Submit">
+       </form>   
+     </div>
+
+   <div align="center">
+     <div id="txt1">list of buses:</div>
+     <div id="aList"><p>XXX<p></div>
+     <div> <p>this is a <em>map</em> of nearest bus </p></div>
+     <p>bus id:
+       <div id="target_bus"></div>
+     </p>
+   </div>
+     <div id="map"></div>
+
+     <div id="footer">
+        <h1>ABOOKLA</h1>
+     </div>
+    
+        
+    <div class="site_footer">
+        @copyright 2015
+    </div>
+
+	</body>
+</html>
